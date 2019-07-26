@@ -234,9 +234,7 @@ public:
         }
     }
 
-    bool solveSudokuRecursively(vector<vector<char>>& board, stack<pair<int, int>>& backtrackStack, int currentRow, int currentColumn) {
-//        cout << currentRow << " " << currentColumn << endl;
-        
+    bool solveSudokuRecursively(vector<vector<char>>& board, int currentRow, int currentColumn) {
         char currentCharacter = board.at(currentRow).at(currentColumn);
 
         //1. There is an existing number.
@@ -252,7 +250,7 @@ public:
                 nextColumn += 1;
             }
 
-            return solveSudokuRecursively(board, backtrackStack, nextRow, nextColumn);
+            return solveSudokuRecursively(board, nextRow, nextColumn);
         }
 
         //2. This position is vacant.
@@ -262,7 +260,6 @@ public:
             char aCandidate = findNextCandidateForCoordinate(board, currentRow, currentColumn, currentStartCharacter);
             if (aCandidate != '.') {
                 //2-1. If a candidate has been found.
-                // backtrackStack.push(make_pair(currentRow, currentColumn));
                 board.at(currentRow).at(currentColumn) = aCandidate;
 
                 if ((currentRow == 8) && (currentColumn == 8)) {
@@ -277,7 +274,7 @@ public:
                         nextColumn += 1;
                     }
 
-                    if (solveSudokuRecursively(board, backtrackStack, nextRow, nextColumn)) {
+                    if (solveSudokuRecursively(board, nextRow, nextColumn)) {
                         //A solution has been found in a future iteration.
                         return true;
                     } else {
@@ -304,10 +301,7 @@ public:
     void solveSudoku(vector<vector<char>>& board) {
         //Assume: board.at(row).at(column)
 
-        ///rowIndex, columnIndex
-        stack<pair<int, int>> backtrackStack;
-
-        solveSudokuRecursively(board, backtrackStack, 0, 0);
+        solveSudokuRecursively(board, 0, 0);
     }
 };
 
