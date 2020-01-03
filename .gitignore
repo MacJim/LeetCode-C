@@ -3,3 +3,7 @@ main.cpp
 
 # macOS .DS_Store files.
 *.DS_Store
+
+# Output files.
+/out/
+*.out
