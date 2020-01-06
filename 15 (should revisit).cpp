@@ -134,7 +134,7 @@ public:
     // Runtime: 616 ms, faster than 5.01% of C++ online submissions for 3Sum.
     // Memory Usage: 24.5 MB, less than 7.06% of C++ online submissions for 3Sum.
     // Why is this so slow on the OJ? It's indeed very fast on my computer!!!
-    std::vector<std::vector<int>> threeSum(std::vector<int>& numbers) {
+    std::vector<std::vector<int>> threeSum2(std::vector<int>& numbers) {
         auto numbersCount = numbers.size();
 
         // 1. Build the numbers appearances cache.
@@ -182,6 +182,93 @@ public:
         }
 
         std::vector<std::vector<int>> returnValue = std::vector<std::vector<int>>(returnValueCache.begin(), returnValueCache.end());
+        return returnValue;
+    }
+
+
+    // MARK: 3
+    // In this solution we first sort the input and make sure that number1 < number2 < number3.
+    // This solution is wrong in that it contains duplicate numbers.
+    std::vector<std::vector<int>> threeSum3(std::vector<int>& numbers) {
+        auto numbersCount = numbers.size();
+        if (numbersCount < 3) {
+            return {};
+        }
+
+        std::vector<std::vector<int>> returnValue;
+
+        std::sort(numbers.begin(), numbers.end());
+
+        for (int index1 = 0; index1 < (numbersCount - 2); index1 += 1) {
+            int number1 = numbers.at(index1);
+            for (int index2 = index1 + 1; index2 < (numbersCount - 1); index2 += 1) {
+                int number2 = numbers.at(index2);
+                int remainingNumber = -number1 - number2;
+                for (int index3 = index2 + 1; index3 < numbersCount; index3 += 1) {
+                    int number3 = numbers.at(index3);
+                    if (number3 == remainingNumber) {
+                        // Triplet found.
+                        returnValue.push_back({number1, number2, number3});
+                    } else if (number3 > remainingNumber) {
+                        break;
+                    }
+                }
+            }
+        }
+
+        return returnValue;
+    }
+
+
+    // MARK: 4. Optimized 3
+    // Runtime: 96 ms, faster than 85.72% of C++ online submissions for 3Sum.
+    // Memory Usage: 14.7 MB, less than 95.88% of C++ online submissions for 3Sum.
+    std::vector<std::vector<int>> threeSum(std::vector<int>& numbers) {
+        auto numbersCount = numbers.size();
+        if (numbersCount < 3) {
+            return {};
+        }
+
+        std::vector<std::vector<int>> returnValue;
+
+        std::sort(numbers.begin(), numbers.end());
+
+        for (int index1 = 0; index1 < (numbersCount - 2); index1 += 1) {
+            int number1 = numbers.at(index1);
+            int targetNumber = -number1;
+
+            int index2 = index1 + 1;
+            int index3 = numbersCount - 1;
+
+            while (index2 < index3) {
+                int number2 = numbers.at(index2);
+                int number3 = numbers.at(index3);
+
+                int currentSum = number2 + number3;
+                if (currentSum > targetNumber) {
+                    index3 -= 1;
+                } else if (currentSum < targetNumber) {
+                    index2 += 1;
+                } else {
+                    // A triplet has been found.
+                    returnValue.push_back({number1, number2, number3});
+                    
+                    // Resolving duplicates of numbers 2 and 3.
+                    do {
+                        index2 += 1;
+                    } while ((number2 == numbers.at(index2)) && (index2 < index3));
+                    do {
+                        index3 -= 1;
+                    } while ((number3 == numbers.at(index3)) && (index2 < index3));
+                }
+            }
+
+            // Resolving duplicates of number 1.
+            while ((numbers.at(index1) == numbers.at(index1 + 1)) && (index1 < (numbersCount - 2))) {
+                index1 += 1;
+            }
+        }
+
         return returnValue;
     }
 };
