@@ -71,7 +71,7 @@ public:
 // MARK: - 3. Use string as character occurrance hash.
 // Runtime: 116 ms, faster than 11.46% of C++ online submissions for Group Anagrams.
 // Memory Usage: 27 MB, less than 5.97% of C++ online submissions for Group Anagrams.
-class Solution {
+class Solution3 {
 public:
     std::vector<std::vector<std::string>> groupAnagrams(std::vector<std::string>& strs) {
         const auto strsSize = strs.size();
@@ -113,6 +113,44 @@ public:
                 currentReturnValue.push_back(strs.at(i));
             }
             returnValue.push_back(std::move(currentReturnValue));
+        }
+
+        return returnValue;
+    }
+};
+
+
+// MARK: - 4. Optimized 2
+// Runtime: 28 ms, faster than 99.51% of C++ online submissions for Group Anagrams.
+// Memory Usage: 18.3 MB, less than 91.04% of C++ online submissions for Group Anagrams.
+class Solution {
+public:
+    std::vector<std::vector<std::string>> groupAnagrams(std::vector<std::string>& inputStrings) {
+        const auto inputStringsSize = inputStrings.size();
+        if (inputStringsSize == 0) {
+            return {};
+        }
+
+        // Value: index in `returnValue`.
+        auto hashes = std::unordered_map<std::string, size_t>();
+        auto returnValue = std::vector<std::vector<std::string>>();
+
+        auto sortedStrings = inputStrings;
+        for (auto& aString: sortedStrings) {
+            std::sort(aString.begin(), aString.end());
+        }
+
+        for (size_t i = 0; i < inputStringsSize; i += 1) {
+            const auto& currentString = inputStrings.at(i);
+            const auto& sortedString = sortedStrings.at(i);
+
+            const auto it = hashes.find(sortedString);
+            if (it == hashes.end()) {
+                hashes.emplace(sortedString, returnValue.size());
+                returnValue.push_back({currentString});
+            } else {
+                returnValue.at(it->second).push_back(currentString);
+            }
         }
 
         return returnValue;
