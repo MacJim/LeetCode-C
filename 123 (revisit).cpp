@@ -5,6 +5,7 @@
 
 #include <iostream>
 #include <vector>
+#include <array>
 #include <algorithm>
 #include <climits>    // `INT_MAX` AND `INT_MIN`
 
@@ -194,6 +195,7 @@ public:
         int buyTwiceProfit = 0;
 
         for (const auto& price: prices) {
+            // NOTE: Order different with 3
             buyOnceProfit = std::max(buyOnceProfit, price + buyOnceCost);
             buyOnceCost = std::max(buyOnceCost, 0 - price);
 
@@ -202,6 +204,214 @@ public:
         }
 
         return std::max(buyOnceProfit, buyTwiceProfit);
+    }
+};
+
+
+#pragma mark - 3. More intuitive 2
+// Runtime: 252 ms, faster than 87.63% of C++ online submissions for Best Time to Buy and Sell Stock III.
+// Memory Usage: 75.6 MB, less than 5.27% of C++ online submissions for Best Time to Buy and Sell Stock III.
+class Solution {
+public:
+    int maxProfit(std::vector<int>& prices) {
+        if (prices.size() < 2) {
+            return 0;
+        }
+
+        /// Always negative.
+        int buyOnceCost = INT_MIN;
+        int buyOnceProfit = 0;
+        int buyTwiceCost = INT_MIN;
+        int buyTwiceProfit = 0;
+
+        for (const auto& price: prices) {
+            // NOTE: Order difference with 2
+            // I think letting the "twice" ones go first is more intuitive: `buyTwiceCost` only uses the previous `buyOnceProfit` (it's not possible to buy and sell at the same time).
+            buyTwiceProfit = std::max(buyTwiceProfit, price + buyTwiceCost);    // Profit relies on the previous cost and the current price.
+            buyTwiceCost = std::max(buyTwiceCost, buyOnceProfit - price);    // Cost relies on the previous "buy once" profit and the current price.
+
+            buyOnceProfit = std::max(buyOnceProfit, price + buyOnceCost);
+            buyOnceCost = std::max(buyOnceCost, 0 - price);
+        }
+
+        return std::max(buyOnceProfit, buyTwiceProfit);
+    }
+};
+
+
+#pragma mark - 4. Optimized 1
+// WRONG ANSWER
+// We might need to obtain 4 segments. 3 segments are not enough: some important segments are ignored halfway.
+#define VALUE_PLACEHOLDER -1
+enum class Status {
+    zero,
+
+    /// Purchased once, but not sold.
+    s1,
+    /// Purchased and sold once.
+    e1,
+
+    /// Purchased twice, sold once.
+    s2,
+    /// Purchased and sold twice.
+    e2,
+
+    /// Purchased three times, sold twice.
+    s3,
+    /// Purchased and sold three times.
+    e3,
+};
+
+class Solution4 {
+public:
+    inline std::array<int, 4> combineSegments(int start1, int end1, int start2, int end2, int start3, int end3) {
+        const int profit1 = end1 - start1;
+        const int profit2 = end2 - start2;
+        const int profit3 = end3 - start3;
+
+        const int profit12 = end2 - start1;
+        const int profit23 = end3 - start2;
+
+        const auto totalProfits = {
+            profit1 + profit2,    // 0
+            profit1 + profit3,    // 1
+            profit2 + profit3,    // 2
+            profit12 + profit3,    // 3
+            profit1 + profit23,    // 4
+        };
+        const size_t maxI = std::distance(std::begin(totalProfits), std::max_element(std::begin(totalProfits), std::end(totalProfits)));
+        switch (maxI) {
+            case 0:
+                return {start1, end1, start2, end2};
+            case 1:
+                return {start1, end1, start3, end3};
+            case 2:
+                return {start2, end2, start3, end3};
+            case 3:
+                return {start1, end2, start3, end3};
+            case 4:
+                return {start1, end1, start2, end3};
+            default:
+                std::cout << "Invalid max index: " << maxI << std::endl;
+                return {start1, end1, start2, end3};
+        }
+    }
+
+    int maxProfit(std::vector<int>& prices) {
+        if (prices.size() < 2) {
+            return 0;
+        }
+
+        // Index: 3 > 2 > 1
+        Status currentStatus = Status::zero;
+
+        // -1 is a placeholder: no price is negative.
+        int start1 = VALUE_PLACEHOLDER;
+        int end1 = VALUE_PLACEHOLDER;
+        int start2 = VALUE_PLACEHOLDER;
+        int end2 = VALUE_PLACEHOLDER;
+
+        int start3 = VALUE_PLACEHOLDER;
+        int end3 = VALUE_PLACEHOLDER;
+
+        for (const auto& price: prices) {
+            switch (currentStatus) {
+                case Status::zero:
+                    start1 = price;
+                    currentStatus = Status::s1;
+                    break;
+
+                case Status::s1:
+                    if (price <= start1) {
+                        start1 = price;
+                    } else {
+                        if (price >= end1) {
+                            end1 = price;
+                            currentStatus = Status::e1;
+                        }
+                    }
+                    break;
+
+                case Status::e1:
+                    if (price > end1) {
+                        end1 = price;
+                    } else {
+                        start2 = price;
+                        currentStatus = Status::s2;
+                    }
+                    break;
+
+                case Status::s2:
+                    if (price <= start2) {
+                        start2 = price;
+                    } else {
+                        if (price >= end2) {
+                            end2 = price;
+                            currentStatus = Status::e2;
+                        }
+                    }
+                    break;
+
+                case Status::e2:
+                    if (price > end2) {
+                        end2 = price;
+                    } else {
+                        start3 = price;
+                        currentStatus = Status::s3;
+                    }
+                    break;
+
+                case Status::s3:
+                    if (price <= start3) {
+                        start3 = price;
+                    } else {
+                        if (price >= end3) {
+                            end3 = price;
+                            currentStatus = Status::e3;
+                        }
+                    }
+                    break;
+
+                case Status::e3:
+                    if (price > end3) {
+                        end3 = price;
+                    } else if (price < start3) {
+                        // Combine segments.
+                        const auto combinedSegments = combineSegments(start1, end1, start2, end2, start3, end3);
+                        start1 = combinedSegments[0];
+                        end1 = combinedSegments[1];
+                        start2 = combinedSegments[2];
+                        end2 = combinedSegments[3];
+
+                        start3 = price;
+                        end3 = VALUE_PLACEHOLDER;
+                        currentStatus = Status::s3;
+                    }
+            }
+        }
+
+        // Final status.
+        switch (currentStatus) {
+            case Status::s1:
+                // No transaction made.
+                return 0;
+
+            case Status::s2:
+                // Unfinished transaction.
+                return (end1 - start1);
+
+            case Status::e3:
+                // Combine segments.
+                const auto combinedSegments = combineSegments(start1, end1, start2, end2, start3, end3);
+                start1 = combinedSegments[0];
+                end1 = combinedSegments[1];
+                start2 = combinedSegments[2];
+                end2 = combinedSegments[3];
+
+                return (end1 - start1 + end2 - start2);
+        }
+
+        return (end1 - start1 + end2 - start2);
     }
 };
 
