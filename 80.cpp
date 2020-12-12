@@ -8,9 +8,10 @@
 #include "helpers/Operators.hpp"
 
 
+#pragma mark - 1. Remove from tail
 // Runtime: 8 ms, faster than 77.40% of C++ online submissions for Remove Duplicates from Sorted Array II.
 // Memory Usage: 11.4 MB, less than 8.42% of C++ online submissions for Remove Duplicates from Sorted Array II.
-class Solution {
+class Solution1 {
 public:
     int removeDuplicates(std::vector<int>& nums) {
         if (nums.size() < 2) {
@@ -37,6 +38,32 @@ public:
         }
 
         return nums.size();
+    }
+};
+
+
+#pragma mark - 2. Copy from front
+// Runtime: 8 ms, faster than 77.40% of C++ online submissions for Remove Duplicates from Sorted Array II.
+// Memory Usage: 11.2 MB, less than 93.04% of C++ online submissions for Remove Duplicates from Sorted Array II.
+class Solution {
+public:
+    int removeDuplicates(std::vector<int>& nums) {
+        if (nums.size() < 2) {
+            return nums.size();
+        }
+
+        int i = 0;
+
+        // We know that the input is in an ascending order.
+        // Thus, we can check `n > nums[i - 2]`.
+        for (const auto& n: nums) {
+            if ((i < 2) || (n > nums[i - 2])) {
+                nums[i] = n;
+                i += 1;
+            }
+        }
+
+        return i;
     }
 };
 
