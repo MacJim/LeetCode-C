@@ -7,6 +7,7 @@
 #include <vector>
 #include <stack>
 #include <algorithm>    // std::find
+#include <numeric>    // std::iota
 
 
 #pragma mark - 1. Recursion
@@ -64,7 +65,7 @@ public:
 #pragma mark - 2. Optimized 1
 // Runtime: 420 ms, faster than 29.18% of C++ online submissions for Beautiful Arrangement.
 // Memory Usage: 6.4 MB, less than 64.86% of C++ online submissions for Beautiful Arrangement.
-class Solution {
+class Solution2 {
 private:
     void count(const int& numsCount, std::vector<bool>& visited, const int nextBaseNum, int& returnValue) {
         if (nextBaseNum > numsCount) {
@@ -109,6 +110,52 @@ public:
 };
 
 
+#pragma mark - 3. Swapping numbers (revisit)
+// Runtime: 8 ms, faster than 96.59% of C++ online submissions for Beautiful Arrangement.
+// Memory Usage: 6.3 MB, less than 88.92% of C++ online submissions for Beautiful Arrangement.
+class Solution {
+private:
+    int count(const int endNum, std::vector<int>& currentNums) {
+        if (endNum <= 0) {
+            return 1;
+        }
+
+        int returnValue = 0;
+
+        // Swap numbers.
+        const auto endIndex = endNum - 1;
+        for (int startIndex = endIndex; startIndex >= 0; startIndex -= 1) {
+            // `startIndex` and `endIndex` may equal.
+            // This handles the "unmodified" case.
+            auto& startNum = currentNums[startIndex];
+
+            if ((endNum % startNum == 0) || (startNum % endNum == 0)) {
+                // They are swappable.
+                std::swap(startNum, currentNums[endIndex]);
+                returnValue += count(endNum - 1, currentNums);
+                std::swap(startNum, currentNums[endIndex]);
+            }
+        }
+
+        return returnValue;
+    }
+
+public:
+    int countArrangement(int n) {
+        if (n <= 3) {
+            return n;
+        }
+
+        /// Numbers start with 1.
+        auto currentNums = std::vector<int>(n, 0);
+        // Initial value works.
+        std::iota(currentNums.begin(), currentNums.end(), 1);
+
+        return count(n, currentNums);
+    }
+};
+
+
 void test(int n, const int expectedResult) {
     static auto solutionInstance = Solution();
 
@@ -126,6 +173,9 @@ int main() {
     test(1, 1);
     test(2, 2);
     test(3, 3);
+    test(4, 8);
+    test(5, 10);
+    test(6, 36);
 
     return 0;
 }
