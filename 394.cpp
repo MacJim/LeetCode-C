@@ -75,7 +75,7 @@ public:
 #pragma mark - 2. Recursion
 // Runtime: 0 ms, faster than 100.00% of C++ online submissions for Decode String.
 // Memory Usage: 6.5 MB, less than 71.05% of C++ online submissions for Decode String.
-class Solution {
+class Solution2 {
 private:
     inline bool isNum(const char& c) {
         return ((c >= '0') && (c <= '9'));
@@ -121,6 +121,57 @@ public:
         const auto returnValue = decodeSubstring(s, 0);
 
         return returnValue.first;
+    }
+};
+
+
+#pragma mark - 3. Fixed 1. Use 2 stacks
+// Runtime: 0 ms, faster than 100.00% of C++ online submissions for Decode String.
+// Memory Usage: 6.5 MB, less than 82.81% of C++ online submissions for Decode String.
+class Solution {
+private:
+    inline bool isNum(const char& c) {
+        return ((c >= '0') && (c <= '9'));
+    }
+
+public:
+    std::string decodeString(std::string& s) {
+        if (s.empty()) {
+            return "";
+        }
+
+        int currentCount = 0;
+        auto counts = std::stack<int>();
+
+        auto currentStr = std::string();
+        auto strs = std::stack<std::string>();
+
+        for (const auto& c: s) {
+            if (isNum(c)) {
+                currentCount *= 10;
+                currentCount += (c - '0');
+            } else if (c == '[') {
+                counts.push(currentCount);
+                currentCount = 0;
+                strs.push(std::move(currentStr));
+                currentStr = std::string();
+            } else if (c == ']') {
+                auto previousCount = counts.top();
+                auto previousStr = strs.top();
+
+                for (int i = 0; i < previousCount; i += 1) {
+                    previousStr += currentStr;
+                }
+                currentStr = std::move(previousStr);
+
+                counts.pop();
+                strs.pop();
+            } else {
+                currentStr.push_back(c);
+            }
+        }
+
+        return currentStr;
     }
 };
 
