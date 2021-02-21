@@ -1,0 +1,63 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Build and Debug",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${fileDirname}/out/${fileBasenameNoExtension}.out",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}",
+            "environment": [],
+            "externalConsole": true,
+            "MIMode": "lldb",
+            // "miDebuggerPath": "/Applications/Xcode.app/Contents/Developer/usr/bin/lldb-mi",    // We must use our own version of lldb.
+            "preLaunchTask": "clang++ build active file"
+        },
+        {
+            "name": "Build and Debug (linking TreeNode)",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${fileDirname}/out/${fileBasenameNoExtension}.out",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}",
+            "environment": [],
+            "externalConsole": true,
+            "MIMode": "lldb",
+            // "miDebuggerPath": "/Applications/Xcode.app/Contents/Developer/usr/bin/lldb-mi",    // We must use our own version of lldb.
+            "preLaunchTask": "clang++ build active file and link TreeNode"
+        },
+        {
+            "name": "Build and Debug (linking ListNode)",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${fileDirname}/out/${fileBasenameNoExtension}.out",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}",
+            "environment": [],
+            "externalConsole": true,
+            "MIMode": "lldb",
+            // "miDebuggerPath": "/Applications/Xcode.app/Contents/Developer/usr/bin/lldb-mi",    // We must use our own version of lldb.
+            "preLaunchTask": "clang++ build active file and link ListNode"
+        },
+        {
+            "name": "Debug without Building",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${fileDirname}/out/${fileBasenameNoExtension}.out",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}",
+            "environment": [],
+            "externalConsole": true,
+            "MIMode": "lldb",
+            // "miDebuggerPath": "/Applications/Xcode.app/Contents/Developer/usr/bin/lldb-mi",    // We must use our own version of lldb.
+        }
+    ]
+}

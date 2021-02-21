@@ -1,0 +1,126 @@
+{
+    "tasks": [
+        {
+            "type": "shell",
+            "label": "clang++ build active file",
+            "command": "/usr/bin/clang++",
+            "args": [
+                "-std=c++17",
+                "-g",    // This equals "--debug"
+                "${file}",
+                "-o",
+                "${fileDirname}/out/${fileBasenameNoExtension}.out"
+            ],
+            "group": "build"
+        },
+        {
+            "type": "shell",
+            "label": "clang++ build active file and link TreeNode",
+            "command": "/usr/bin/clang++",
+            "args": [
+                "-std=c++17",
+                "-g",    // This equals "--debug"
+                "${file}",
+                "-o",
+                "${fileDirname}/out/${fileBasenameNoExtension}.out",
+                "${fileDirname}/helpers/TreeNode.out"
+            ],
+            "group": "build"
+        },
+        {
+            "type": "shell",
+            "label": "clang++ build active file and link ListNode",
+            "command": "/usr/bin/clang++",
+            "args": [
+                "-std=c++17",
+                "-g",    // This equals "--debug"
+                "${file}",
+                "-o",
+                "${fileDirname}/out/${fileBasenameNoExtension}.out",
+                "${fileDirname}/helpers/ListNode.out"
+            ],
+            "group": "build"
+        },
+        {
+            "type": "shell",
+            "label": "clang++ build active file (O1)",
+            "command": "/usr/bin/clang++",
+            "args": [
+                "-std=c++17",
+                "-O1",
+                "${file}",
+                "-o",
+                "${fileDirname}/out/${fileBasenameNoExtension}.out"
+            ],
+            "group": "build"
+        },
+        {
+            "type": "shell",
+            "label": "clang++ build active file (O1) and link TreeNode",
+            "command": "/usr/bin/clang++",
+            "args": [
+                "-std=c++17",
+                "-O1",
+                "${file}",
+                "-o",
+                "${fileDirname}/out/${fileBasenameNoExtension}.out",
+                "${fileDirname}/helpers/TreeNode.out"
+            ],
+            "group": "build"
+        },
+        {
+            "type": "shell",
+            "label": "clang++ build active file (O1) and link ListNode",
+            "command": "/usr/bin/clang++",
+            "args": [
+                "-std=c++17",
+                "-O1",
+                "${file}",
+                "-o",
+                "${fileDirname}/out/${fileBasenameNoExtension}.out",
+                "${fileDirname}/helpers/ListNode.out"
+            ],
+            "group": "build"
+        },
+        {
+            "type": "shell",
+            "label": "clang++ build and run active file (O1)",
+            "command": "${fileDirname}/out/${fileBasenameNoExtension}.out",
+            "dependsOn": [
+                "clang++ build active file (O1)"
+            ],
+            "group": "build"
+            // "group": {
+            //     "kind": "build",
+            //     "isDefault": true
+            // }
+        },
+        {
+            "type": "shell",
+            "label": "clang++ build, link TreeNode and run active file (O1)",
+            "command": "${fileDirname}/out/${fileBasenameNoExtension}.out",
+            "dependsOn": [
+                "clang++ build active file (O1) and link TreeNode"
+            ],
+            "group": "build"
+            // "group": {
+            //     "kind": "build",
+            //     "isDefault": true
+            // }
+        },
+        {
+            "type": "shell",
+            "label": "clang++ build, link ListNode and run active file (O1)",
+            "command": "${fileDirname}/out/${fileBasenameNoExtension}.out",
+            "dependsOn": [
+                "clang++ build active file (O1) and link ListNode"
+            ],
+            // "group": "build"
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        },
+    ],
+    "version": "2.0.0"
+}
