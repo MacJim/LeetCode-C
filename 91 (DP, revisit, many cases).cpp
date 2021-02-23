@@ -78,9 +78,10 @@ public:
 
 
 #pragma mark - 2. Log 2 values: Make use of the Fibonacci formula.
+// May 2020
 // Runtime: 0 ms, faster than 100.00% of C++ online submissions for Decode Ways.
 // Memory Usage: 6.2 MB, less than 100.00% of C++ online submissions for Decode Ways.
-class Solution {
+class Solution2 {
 public:
     int numDecodings(const std::string& s) {
         const auto len = s.size();
@@ -113,22 +114,123 @@ public:
 };
 
 
+#pragma mark - 3. My own solution
+// Feb 2021
+/*
+ * Current value:
+ *
+ * - 0: previous value must be 1 or 2
+ * - 1 ~ 6: + 2 * (2 cases) + (1 case) if previous value is 1 or 2
+ * - 7 ~ 9: + 2 * (2 cases) + (1 case) if previous value is 1
+ *
+ * Example: 2,2,2,2 -> 2,2,2,2,2
+ *
+ * - 1 case (ends with a 2-digit number):
+ *   - 2,2,22
+ *   - 22,22
+ * - 2 cases (ends with a single-digit number) (equals the result of 2,2,2):
+ *   - 2,2,2,2
+ *   - 2,22,2
+ *   - 22,2,2
+ */
+// Runtime: 0 ms, faster than 100.00% of C++ online submissions for Decode Ways.
+// Memory Usage: 6 MB, less than 98.59% of C++ online submissions for Decode Ways.
+class Solution {
+public:
+    int numDecodings(const std::string& s) {
+        if (s.empty()) {
+            return 0;
+        }
+        if (s[0] == '0') {
+            // Invalid.
+            return 0;
+        }
+        if (s.size() == 1) {
+            return 1;
+        }
+
+        /// 2 cases.
+        int prevPrev = 1;
+        /// 2 cases + 1 case.
+        int prev = 1;
+
+        // Index 1.
+        if (s[1] == '0') {
+            if ((s[0] != '1') && (s[0] != '2')) {
+                // Invalid.
+                return 0;
+            }
+        } else if (s[1] <= '6') {
+            if ((s[0] == '1') || (s[0] == '2')) {
+                prev = 2;
+            }
+        } else {
+            if (s[0] == '1') {
+                prev = 2;
+            }
+        }
+
+        // Upcoming indices.
+        for (int i = 2; i < s.size(); i += 1) {
+            if (s[i] == '0') {
+                if ((s[i - 1] != '1') && (s[i - 1] != '2')) {
+                    // Invalid.
+                    return 0;
+                }
+                prev = prevPrev;
+                prevPrev = 0;    // Cannot separate 0.
+            } else if (s[i] <= '6') {
+                if ((s[i - 1] == '1') || (s[i - 1] == '2')) {
+                    auto current = prevPrev + prev;    // 2 * (2 cases) + (1 case)
+                    prevPrev = prev;
+                    prev = current;
+                } else {
+                    // Interpret the current digit as a single number. Same result as `prev`.
+                    prevPrev = prev;
+                }
+            } else {
+                if (s[i - 1] == '1') {
+                    auto current = prevPrev + prev;
+                    prevPrev = prev;
+                    prev = current;
+                } else {
+                    prevPrev = prev;
+                }
+            }
+        }
+
+        return prev;
+    }
+};
+
+
+void test(const std::string& s, const int expectedResult) {
+    static auto solutionInstance = Solution();
+
+    auto result = solutionInstance.numDecodings(s);
+
+    if (result == expectedResult) {
+        std::cout << "[Correct] " << s << ": " << result << std::endl;
+    } else {
+        std::cout << "[Wrong] " << s << ": " << result << " (should be " << expectedResult << ")" << std::endl;
+    }
+}
+
+
 int main() {
-    auto solutionInstance = Solution();
+    test("12", 2);
+    test("225", 3);
+    test("22222", 8);
+    test("882222", 5);
+    test("22422", 6);
+    test("10", 1);
+    test("0", 0);
+    test("100", 0);
+    test("110", 1);
+    test("101010", 1);
+    test("17", 2);
 
 //    std::cout << solutionInstance.getFakeFibonacciNumber(3) << std::endl;
-
-    std::cout << solutionInstance.numDecodings("12") << std::endl;    // 2
-    std::cout << solutionInstance.numDecodings("225") << std::endl;    // 3
-    std::cout << solutionInstance.numDecodings("22222") << std::endl;    // 8
-    std::cout << solutionInstance.numDecodings("882222") << std::endl;    // 5
-    std::cout << solutionInstance.numDecodings("22422") << std::endl;    // 6
-    std::cout << solutionInstance.numDecodings("10") << std::endl;    // 1
-    std::cout << solutionInstance.numDecodings("0") << std::endl;    // 0
-    std::cout << solutionInstance.numDecodings("100") << std::endl;    // 0
-    std::cout << solutionInstance.numDecodings("110") << std::endl;    // 1
-    std::cout << solutionInstance.numDecodings("101010") << std::endl;    // 1
-    std::cout << solutionInstance.numDecodings("17") << std::endl;    // 2
 
     return 0;
 }
