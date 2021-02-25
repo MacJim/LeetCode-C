@@ -16,7 +16,12 @@
 
 #pragma mark - 1. Official solution: DP: divide (revisit)
 /*
- * Most important thought: instead of choosing which number to eliminate first, we choose which number to eliminate **last**.
+ * Important DP thoughts:
+ * 
+ * - `begin` and `end` are not bursted
+ *   - Thus, we add dummy 1s at the front and end
+ * - Instead of choosing which number to eliminate first, we choose which number to eliminate **last**
+ *   - Multiply it with `begin` and `end` for the final product when it's bursted
  */
 // Runtime: 52 ms, faster than 18.28% of C++ online submissions for Burst Balloons.
 // Memory Usage: 9.2 MB, less than 14.36% of C++ online submissions for Burst Balloons.
@@ -53,7 +58,8 @@ public:
                 }
 
                 for (size_t mid = begin + 1; mid < end; mid += 1) {    // (mid - 1) in the original array.
-                    const int& product = extendedNums[begin] * extendedNums[mid] * extendedNums[end];    // Discard `mid` **last**.
+                    // `begin` and `end` are not bursted.
+                    const int& product = extendedNums[begin] * extendedNums[mid] * extendedNums[end];    // Burst `mid` **last**.
                     const int sum = product + dp[begin][mid] + dp[mid][end];
                     dp[begin][end] = std::max(dp[begin][end], sum);
                 }
