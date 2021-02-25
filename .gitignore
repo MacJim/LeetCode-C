@@ -1,3 +1,7 @@
+# VSCode config
+/.vscode/c_cpp_properties.json
+/.vscode/settings.json
+
 # Ignore the current file.
 main.cpp
 
