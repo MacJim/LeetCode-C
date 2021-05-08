@@ -6,8 +6,10 @@
 #include <iostream>
 #include <vector>
 
+#include "helpers/Operators.hpp"
 
-// MARK: - Wrong solution
+
+// MARK: 1. Wrong solution
 class Solution1 {
 public:
     int search(const std::vector<int>& nums, const int target) {
@@ -79,10 +81,10 @@ public:
 };
 
 
-// MARK: 2. Find rotation point first
+// MARK: 2. Find rotation point first (this looks so complicated)
 // Runtime: 4 ms, faster than 81.85% of C++ online submissions for Search in Rotated Sorted Array.
 // Memory Usage: 8.9 MB, less than 21.69% of C++ online submissions for Search in Rotated Sorted Array.
-class Solution {
+class Solution2 {
 public:
     int search(std::vector<int>& nums, int target) {
         auto numsCount = nums.size();
@@ -182,26 +184,74 @@ public:
 };
 
 
+// MARK: 3. Modified binary search (revisit)
+// Source: https://leetcode.ca/2016-01-02-33-Search-in-Rotated-Sorted-Array/
+// Runtime: 4 ms, faster than 71.45% of C++ online submissions for Search in Rotated Sorted Array.
+// Memory Usage: 11.1 MB, less than 20.73% of C++ online submissions for Search in Rotated Sorted Array.
+class Solution {
+public:
+    int search(std::vector<int>& nums, int target) {
+        if (nums.size() == 1) {
+            return (target == nums[0])? 0: -1;
+        }
+
+        int start = 0;
+        int end = nums.size() - 1;
+
+        while (start <= end) {
+            const int mid = (start + end) / 2;
+
+            if (nums[mid] == target) {
+                return mid;
+            }
+
+            if (nums[start] <= nums[mid]) {    // Must judge equal to resolve `start == mid`.
+                // No turning point on the left side.
+                if ((nums[start] <= target) && (target <= nums[mid])) {
+                    // Search on the left side.
+                    end = mid - 1;
+                } else {
+                    start = mid + 1;
+                }
+            } else {
+                if ((nums[mid] <= target) && (target <= nums[end])) {
+                    // Search on the right side.
+                    start = mid + 1;
+                } else {
+                    end = mid - 1;
+                }
+            }
+        }
+
+        return -1;
+    }
+};
+
+
+void test(const std::vector<int>& nums, const int target, const int expectedResult) {
+    static auto solutionInstance = Solution();
+
+    auto numsCopy = nums;
+    auto result = solutionInstance.search(numsCopy, target);
+
+    if (result == expectedResult) {
+        std::cout << "[Correct] " << nums << ", " << target << ": " << result << std::endl;
+    } else {
+        std::cout << "[Wrong] " << nums << ", " << target << ": " << result << " (should be " << expectedResult << ")" << std::endl;
+    }
+}
+
+
 int main() {
-    auto solutionInstance = Solution();
+    test({3,1}, 3, 0);
+    test({3,1}, 1, 1);
 
-    std::vector<int> testNums1 = {4,5,6,7,0,1,2};
-    int target1 = 0;
-    std::cout << solutionInstance.search(testNums1, target1) << std::endl;    // 4
-    
-    std::vector<int> testNums2 = {4,5,6,7,0,1,2};
-    int target2 = 3;
-    std::cout << solutionInstance.search(testNums2, target2) << std::endl;    // -1
+    test({2,3,1}, 0, -1);
+    test({2,3,1}, 1, 2);
 
-    std::vector<int> testNums3 = {1,3};
-    int target3 = 0;
-    std::cout << solutionInstance.search(testNums3, target3) << std::endl;    // -1
+    test({4,5,6,7,0,1,2}, 0, 4);
+    test({4,5,6,7,0,1,2}, 3, -1);
 
-    std::vector<int> testNums4 = {3,1};
-    int target4 = 3;
-    std::cout << solutionInstance.search(testNums4, target4) << std::endl;    // 0
-
-    std::vector<int> testNums5 = {3,5,1};
-    int target5 = 3;
-    std::cout << solutionInstance.search(testNums5, target5) << std::endl;    // 0
+    test({4,5,6,7,8,1,2,3}, 8, 4);
+    test({4,5,6,7,8,1,2,3}, 0, -1);
 }
