@@ -56,14 +56,14 @@ public:
 #pragma mark - 2. Binary search and 2 pointers
 // Runtime: 40 ms, faster than 61.71% of C++ online submissions for Find K Closest Elements.
 // Memory Usage: 31 MB, less than 91.90% of C++ online submissions for Find K Closest Elements.
-class Solution {
+class Solution2 {
 public:
     std::vector<int> findClosestElements(std::vector<int>& arr, int k, int x) {
         if (arr.size() == 1) {
             return arr;
         }
 
-        // 2 pointers
+        // 2 pointers.
         int subArrLeft = -1;
         int subArrRight = -1;
 
@@ -91,7 +91,69 @@ public:
             subArrRight = start;
         }
 
-        // 2 pointers
+        // 2 pointers.
+        while ((subArrRight - subArrLeft - 1) < k) {
+            if (subArrLeft == -1) {
+                subArrRight += (k - (subArrRight - subArrLeft - 1));
+                break;
+            } else if (subArrRight == arr.size()) {
+                subArrLeft -= (k - (subArrRight - subArrLeft - 1));
+                break;
+            }
+
+            const auto leftAbs = abs(arr[subArrLeft] - x);
+            const auto rightAbs = abs(arr[subArrRight] - x);
+            if (leftAbs <= rightAbs) {
+                subArrLeft -= 1;
+            } else {
+                subArrRight += 1;
+            }
+        }
+
+        return std::vector<int>(arr.begin() + subArrLeft + 1, arr.begin() + subArrRight);
+    }
+};
+
+
+#pragma mark - 3. Optimized 2
+// Well it's the same performance as 2.
+// Runtime: 40 ms, faster than 61.71% of C++ online submissions for Find K Closest Elements.
+// Memory Usage: 31.1 MB, less than 80.43% of C++ online submissions for Find K Closest Elements.
+class Solution {
+public:
+    std::vector<int> findClosestElements(std::vector<int>& arr, int k, int x) {
+        if (arr.size() == 1) {
+            return arr;
+        }
+
+        // 2 pointers.
+        int subArrLeft = -1;
+        int subArrRight = -1;
+
+        // Binary search: search for the position that's equal to or just larger than `x`.
+        int left = 0;
+        int right = arr.size();    // Initial value is out of bound.
+
+        while (left < right) {    // Terminates when `left == right`.
+            int mid = left + (right - left) / 2;
+
+            if (arr[mid] == x) {
+                subArrLeft = mid - 1;
+                subArrRight = mid + 1;
+                break;
+            } else if (arr[mid] < x) {
+                left = mid + 1;
+            } else {
+                right = mid;
+            }
+        }
+
+        if (subArrLeft == -1) {
+            subArrLeft = left - 1;
+            subArrRight = left;
+        }
+
+        // 2 pointers.
         while ((subArrRight - subArrLeft - 1) < k) {
             if (subArrLeft == -1) {
                 subArrRight += (k - (subArrRight - subArrLeft - 1));
