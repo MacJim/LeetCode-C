@@ -22,7 +22,7 @@ public:
         int left = 0;
         int right = nums.size() - 1;
 
-        while (left <= right) {    // Terminates when left == (right + 1)
+        while (left < right) {    // Terminates when left == right
             int mid = (left + right) / 2;
 
             if (nums[right] > nums[mid]) {
@@ -43,8 +43,8 @@ public:
  *
  * Although solution 2 is faster, I still prefer the more elegant solution 1.
  */
-// Runtime: 12 ms, faster than 58.14% of C++ online submissions for Find Minimum in Rotated Sorted Array.
-// Memory Usage: 10.1 MB, less than 64.28% of C++ online submissions for Find Minimum in Rotated Sorted Array.
+// Runtime: 4 ms, faster than 58.28% of C++ online submissions for Find Minimum in Rotated Sorted Array.
+// Memory Usage: 10 MB, less than 94.67% of C++ online submissions for Find Minimum in Rotated Sorted Array.
 class Solution {
 public:
     int findMin(std::vector<int>& nums) {
@@ -60,7 +60,7 @@ public:
         int left = 0;
         int right = nums.size() - 1;
 
-        while (left <= right) {    // Terminates when left == (right + 1)
+        while (left < right) {    // Terminates when left == right
             int mid = (left + right) / 2;
 
             if (nums[mid] > nums[mid + 1]) {
