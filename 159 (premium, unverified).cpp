@@ -32,7 +32,7 @@ private:
 
 public:
     int longestSubstring(std::string& s) {
-        if (s.size() < 2) {
+        if (s.size() <= 2) {
             return s.size();
         }
 
