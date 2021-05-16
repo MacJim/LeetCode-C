@@ -204,7 +204,7 @@ public:
 
 #pragma mark - 5. DP, outer parentheses + combine intervals
 // Time Limit Exceeded
-class Solution {
+class Solution5 {
 public:
     int longestValidParentheses(const std::string& s) {
         if (s.size() < 2) {
@@ -255,6 +255,124 @@ public:
 };
 
 
+#pragma mark - 6. Official DP solution (revisit)
+// Runtime: 4 ms, faster than 80.79% of C++ online submissions for Longest Valid Parentheses.
+// Memory Usage: 7.2 MB, less than 49.75% of C++ online submissions for Longest Valid Parentheses.
+class Solution6 {
+public:
+    int longestValidParentheses(const std::string& s) {
+        if (s.size() < 2) {
+            return 0;
+        }
+
+        auto dp = std::vector<int>(s.size(), 0);
+
+//        int returnValue = 0;
+
+        // First 2 elements.
+        if ((s[0] == '(') && (s[1] == ')')) {
+            dp[1] = 2;
+//            returnValue = 2;
+        }
+
+        // Upcoming elements.
+        for (int i = 2; i < s.size(); i += 1) {
+            const auto& c = s[i];
+            if (c == '(') {
+                // Left brackets are invalid terminations.
+                continue;
+            }
+
+            if (s[i - 1] == '(') {
+                // Previous: (, current: )
+                dp[i] = dp[i - 2] + 2;
+            } else {
+                // Previous: ), current: )
+                // Find the assumed earlier (
+                const auto& previousLen = dp[i - 1];
+                if (previousLen > 0) {
+                    const int assumedLeftBracketLocation = i - previousLen - 1;
+                    if ((assumedLeftBracketLocation >= 0) && (s[assumedLeftBracketLocation] == '(')) {
+                        // Found an outer brackets pair.
+                        dp[i] = dp[i - 1] + 2;
+
+                        // There may be an earlier string that's connected to the current string.
+                        const int previousConnectedStringLengthIndex = i - previousLen - 2;
+                        if (previousConnectedStringLengthIndex >= 0) {
+                            dp[i] += dp[previousConnectedStringLengthIndex];
+                        }
+                    }
+                }
+            }
+        }
+
+        return *std::max_element(dp.begin(), dp.end());
+    }
+};
+
+
+#pragma mark - 7. Official solution, fixes 2 using a forward and a backward pass (revisit)
+/*
+ * Doing a forward pass and a backward pass allows us to ignore excessive leading/trailing brackets.
+ */
+// Runtime: 4 ms, faster than 80.79% of C++ online submissions for Longest Valid Parentheses.
+// Memory Usage: 6.6 MB, less than 98.42% of C++ online submissions for Longest Valid Parentheses.
+class Solution {
+public:
+    int longestValidParentheses(const std::string& s) {
+        if (s.size() < 2) {
+            return 0;
+        }
+
+        int halfLength = 0;
+
+        int leftBrackets = 0;
+        int rightBrackets = 0;
+
+        // Forward pass.
+        for (auto it = s.begin(); it < s.end(); it += 1) {
+            if (*it == '(') {
+                leftBrackets += 1;
+            } else {
+                rightBrackets += 1;
+            }
+
+            if (rightBrackets > leftBrackets) {
+                // Reset.
+                leftBrackets = 0;
+                rightBrackets = 0;
+            } else if (rightBrackets == leftBrackets) {
+                // Set return value.
+                halfLength = std::max(halfLength, rightBrackets);
+            }
+        }
+
+        // Backward pass.
+        leftBrackets = 0;
+        rightBrackets = 0;
+        for (auto it = s.rbegin(); it < s.rend(); it += 1) {
+            if (*it == '(') {
+                leftBrackets += 1;
+            } else {
+                rightBrackets += 1;
+            }
+
+            // Note that the comparison is reversed.
+            if (leftBrackets > rightBrackets) {
+                // Reset.
+                leftBrackets = 0;
+                rightBrackets = 0;
+            } else if (leftBrackets == rightBrackets) {
+                // Set return value.
+                halfLength = std::max(halfLength, leftBrackets);
+            }
+        }
+
+        return halfLength * 2;
+    }
+};
+
+
 void test(const std::string& s, const int expectedResult) {
     static auto solutionInstance = Solution();
 
@@ -269,8 +387,9 @@ void test(const std::string& s, const int expectedResult) {
 
 
 int main() {
-    test("()((())()", 6);
     test(")(((((()())()()))()(()))(", 22);
+    test(")()())", 4);
+    test("()((())()", 6);
 
     test("(((()(()", 2);
     test("((((())(()", 4);
@@ -278,7 +397,6 @@ int main() {
     test(")(", 0);
     test("(", 0);
     test("(()", 2);
-    test(")()())", 4);
     test("", 0);
     test("(()()()())", 10);
 
