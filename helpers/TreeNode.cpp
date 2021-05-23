@@ -1,4 +1,4 @@
-#include <vector>
+#include <stack>
 #include <sstream>
 
 #include "TreeNode.hpp"
@@ -39,7 +39,7 @@ std::string TreeHelper::serialize(TreeNode* root) {
     return returnValue;
 }
 
-TreeNode* TreeHelper::deserialize(std::string data) {
+TreeNode* TreeHelper::deserialize(const std::string& data) {
     auto dataLength = data.size();
     
     if (dataLength == 0) {
@@ -56,7 +56,7 @@ TreeNode* TreeHelper::deserialize(std::string data) {
     // First number.
     getline(dataStream, currentString, ',');
     int firstNumber = std::stoi(currentString);
-    TreeNode* rootNode = new TreeNode(firstNumber);
+    auto rootNode = new TreeNode(firstNumber);
     currentNumbersToProcess.push_back(rootNode);
     
     // Split the string into substrings.
@@ -64,10 +64,10 @@ TreeNode* TreeHelper::deserialize(std::string data) {
     while (areStringsLeft && (!currentNumbersToProcess.empty())) {
         for (const auto& currentNodeToInspect: currentNumbersToProcess) {
             if (getline(dataStream, currentString, ',')) {
-                if (currentString != "") {
+                if (!currentString.empty()) {
                     // `currentNodeToInspect` has a left child.
                     int leftNumber = stoi(currentString);
-                    TreeNode* leftNode = new TreeNode(leftNumber);
+                    auto leftNode = new TreeNode(leftNumber);
                     currentNodeToInspect->left = leftNode;
                     followingNumbersToProcess.push_back(leftNode);
                 }
@@ -78,10 +78,10 @@ TreeNode* TreeHelper::deserialize(std::string data) {
             }
             
             if (getline(dataStream, currentString, ',')) {
-                if (currentString != "") {
+                if (!currentString.empty()) {
                     // `currentNodeToInspect` has a right child.
                     int rightNumber = stoi(currentString);
-                    TreeNode* rightNode = new TreeNode(rightNumber);
+                    auto rightNode = new TreeNode(rightNumber);
                     currentNodeToInspect->right = rightNode;
                     followingNumbersToProcess.push_back(rightNode);
                 }
@@ -97,4 +97,36 @@ TreeNode* TreeHelper::deserialize(std::string data) {
     }
     
     return rootNode;
+}
+
+
+std::vector<int> TreeHelper::inOrderTraverse(TreeNode* root) {
+    if (!root) {
+        return {};
+    }
+
+    auto returnValue = std::vector<int>();
+
+    auto s = std::stack<TreeNode*>({root});
+
+    while (s.top()->left) {
+        s.push(s.top()->left);
+    }
+
+    while (!s.empty()) {
+        returnValue.push_back(s.top()->val);
+
+        auto right = s.top()->right;
+
+        s.pop();
+
+        if (right) {
+            s.push(right);
+            while (s.top()->left) {
+                s.push(s.top()->left);
+            }
+        }
+    }
+
+    return returnValue;
 }

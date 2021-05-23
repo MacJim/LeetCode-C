@@ -4,6 +4,7 @@
 
 #include <iostream>
 #include <string>
+#include <vector>
 
 
 struct TreeNode {
@@ -26,5 +27,7 @@ public:
      * - "1,2,5,3,,,,,4"
      */
     static std::string serialize(TreeNode* root);
-    static TreeNode* deserialize(std::string data);
+    static TreeNode* deserialize(const std::string& data);
+
+    static std::vector<int> inOrderTraverse(TreeNode* root);
 };
