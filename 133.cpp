@@ -36,6 +36,7 @@ class Solution {
 private:
     void recursion(Node* node, std::vector<Node*>& originalNodesVec) {
         if (node->val > 100) {
+            // This node has already been visited.
             return;
         }
 
@@ -47,7 +48,7 @@ private:
         }
 
         originalNodesVec[index] = node;
-        node->val += 100;
+        node->val += 100;    // Add 100 to mark as visited.
 
         for (const auto neighbor: node->neighbors) {
             recursion(neighbor, originalNodesVec);
