@@ -55,7 +55,7 @@ public:
 #pragma mark - 3. Judge carry
 // Runtime: 4 ms, faster than 90.16% of C++ online submissions for Bitwise AND of Numbers Range.
 // Memory Usage: 5.9 MB, less than 70.60% of C++ online submissions for Bitwise AND of Numbers Range.
-class Solution {
+class Solution3 {
 public:
     int rangeBitwiseAnd(int left, int right) {
         if (left == right) {
@@ -99,6 +99,26 @@ public:
         }
 
         return returnValue;
+    }
+};
+
+
+#pragma mark - 4. Find common left bits (revisit)
+// Source: https://leetcode.ca/2016-06-18-201-Bitwise-AND-of-Numbers-Range/
+// Runtime: 4 ms, faster than 90.16% of C++ online submissions for Bitwise AND of Numbers Range.
+// Memory Usage: 5.9 MB, less than 70.60% of C++ online submissions for Bitwise AND of Numbers Range.
+class Solution {
+public:
+    int rangeBitwiseAnd(int left, int right) {
+        short shifts = 0;
+
+        while (left != right) {
+            shifts += 1;
+            left >>= 1;
+            right >>= 1;
+        }
+
+        return left << shifts;
     }
 };
 
