@@ -59,6 +59,11 @@ public:
     }
 
     void updateCharacter(const char& previousChar, const char& currentChar) {
+        /*
+         * TODO:
+         * Actually we don't need to calculate the previous hash.
+         * Just remove the top 2 bits from `currentHash`.
+         */
         int previousCharHash = 0;
         switch (previousChar) {
             case 'A':
