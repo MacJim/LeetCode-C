@@ -12,8 +12,8 @@ using namespace std;
 
 class Solution {
 public:
-    //MARK: 1. Copied from question 131.
-    //Result: Memory Limit Exceeded!!! On my computer, the memory usage easily exceeded 2GB...
+    // MARK: 1. Copied from question 131.
+    // Result: Memory Limit Exceeded!!! On my computer, the memory usage easily exceeded 2GB...
     /**
      * `startIndex` and `endIndex` are both inclusive.
      */
@@ -85,8 +85,8 @@ public:
     }
     
     
-    //MARK: 2. Greedier
-    //Result: Time Limit Exceeded.
+    // MARK: 2. Greedier
+    // Result: Time Limit Exceeded.
     void searchForLongestPalindromeFromStart(const string& s, int startIndex, int& currentPartitionsCount, int& minimumPartitionsCount) {
         auto stringLength = s.length();
         if (startIndex >= stringLength) {
@@ -124,29 +124,32 @@ public:
     }
     
     
-    //MARK: 3
-    //Source: https://leetcode.com/problems/palindrome-partitioning-ii/discuss/42212/Two-C%2B%2B-versions-given-(one-DP-28ms-one-Manancher-like-algorithm-10-ms)
-    //Runtime: 8 ms, faster than 95.89% of C++ online submissions for Palindrome Partitioning II.
-    //Memory Usage: 8.5 MB, less than 90.98% of C++ online submissions for Palindrome Partitioning II.
+    // MARK: 3
+    // Source: https://leetcode.com/problems/palindrome-partitioning-ii/discuss/42212/Two-C%2B%2B-versions-given-(one-DP-28ms-one-Manancher-like-algorithm-10-ms)
+    // Runtime: 8 ms, faster than 95.89% of C++ online submissions for Palindrome Partitioning II.
+    // Memory Usage: 8.5 MB, less than 90.98% of C++ online submissions for Palindrome Partitioning II.
     int minCut(string s) {
         auto stringLength = s.length();
         if (stringLength == 0) {
             return 0;
         }
-        
-        int minCuts[stringLength+1];
-        for(int i = 0; i <= stringLength; i += 1) {
+
+        int minCuts[stringLength + 1];
+        for (int i = 0; i <= stringLength; i += 1) {
             minCuts[i] = i - 1;
         }
 
-        for(int i = 1; i < stringLength; i += 1) {
-            //Odd-length substrings.
-            for(int j = 0; ((i - j) >= 0) && ((i + j) < stringLength) && (s[i - j] == s[i + j]); j += 1) {
-                minCuts[i + j + 1] = min(minCuts[i + j + 1], 1 + minCuts[i - j]);
+        for (int center = 1; center < stringLength; center += 1) {
+            // Odd-length substrings.
+            for (int sideLength = 0; (center >= sideLength) && ((center + sideLength) < stringLength) && (s[center - sideLength] == s[center + sideLength]); sideLength += 1) {
+                // Update the min cuts count if `s[center - sideLength]` to `s[center + sideLength]` is a palindrome.
+                minCuts[center + sideLength + 1] = min(minCuts[center + sideLength + 1], 1 + minCuts[center - sideLength]);
             }
-            //Even-length substrings.
-            for(int j = 0; ((i - j - 1) >= 0) && ((i + j) < stringLength) && (s[i - j - 1] == s[i + j]); j += 1) {
-                minCuts[i + j + 1] = min(minCuts[i + j + 1], 1 + minCuts[i - j - 1]);
+
+            // Even-length substrings.
+            for (int sideLength = 0; (center >= (sideLength + 1)) && ((center + sideLength) < stringLength) && (s[center - sideLength - 1] == s[center + sideLength]); sideLength += 1) {
+                // Update the min cuts count if `s[center - sideLength - 1]` to `s[center + sideLength]` is a palindrome.
+                minCuts[center + sideLength + 1] = min(minCuts[center + sideLength + 1], 1 + minCuts[center - sideLength - 1]);
             }
         }
         return minCuts[stringLength];
