@@ -9,6 +9,7 @@
 #include <iostream>
 #include <vector>
 #include <set>
+#include <queue>
 
 
 /*
@@ -80,6 +81,30 @@ std::ostream& operator << (std::ostream& os, const std::set<T, UnusedComparator>
     return os;
 }
 
+
+#pragma mark queue
+template <typename T>
+std::ostream& operator << (std::ostream& os, std::priority_queue<T> q) {
+    os << "[";
+    while (!q.empty()) {
+        os << " " << q.top();
+        q.pop();
+    }
+    os << " ]";
+    return os;
+}
+
+
+template <typename T, typename UnusedContainer, typename UnusedComparator>
+std::ostream& operator << (std::ostream& os, std::priority_queue<T, UnusedContainer, UnusedComparator> q) {
+    os << "[";
+    while (!q.empty()) {
+        os << " " << q.top();
+        q.pop();
+    }
+    os << " ]";
+    return os;
+}
 
 
 #endif //LEETCODECACHE_OPERATORS_HPP
