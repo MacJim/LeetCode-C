@@ -8,13 +8,15 @@
  */
 
 #include <iostream>
-//#include <vector>
+#include <vector>
+#include <stack>
 #include <array>
 #include <string>
 #include <map>
 #include <unordered_map>
 
 //#include "helpers/Operators.hpp"
+#include "helpers/terminal_format.h"
 
 
 #pragma mark - 1. Front to back
@@ -76,7 +78,7 @@ public:
  */
 // Runtime: 16 ms, faster than 8.12% of C++ online submissions for Remove Duplicate Letters.
 // Memory Usage: 8.6 MB, less than 5.04% of C++ online submissions for Remove Duplicate Letters.
-class Solution {
+class Solution2 {
 private:
     std::string recursion(std::string& s) {
         if (s.size() <= 1) {
@@ -133,6 +135,57 @@ public:
 };
 
 
+#pragma mark - 3. Stack-based solution (revisit)
+// Source: https://leetcode.com/problems/remove-duplicate-letters/discuss/76769/Java-solution-using-Stack-with-comments
+// Runtime: 0 ms, faster than 100.00% of C++ online submissions for Remove Duplicate Letters.
+// Memory Usage: 6.5 MB, less than 84.31% of C++ online submissions for Remove Duplicate Letters.
+class Solution {
+public:
+    std::string removeDuplicateLetters(std::string& s) {
+        if (s.size() == 1) {
+            return s;
+        }
+
+        auto occurrences = std::array<int, 26>();    // Empty initializer here leads to value-initialization instead of default-initialization.
+        for (const auto& c: s) {
+            occurrences[c - 'a'] += 1;
+        }
+
+        auto visited = std::array<bool, 26>();
+        auto currentChars = std::vector<char>();
+        currentChars.reserve(26);
+
+        for (const auto& c: s) {
+            const auto index = c - 'a';
+
+            occurrences[index] -= 1;
+
+            if (visited[index]) {
+                // Do nothing if it's already in `currentChars`.
+                continue;
+            }
+            visited[index] = true;
+
+            // Check the stack top: If it's a larger element that occurs later in the string, pop it.
+            while ((!currentChars.empty()) && (c < currentChars.back()) && (occurrences[currentChars.back() - 'a'] != 0)) {
+                visited[currentChars.back() - 'a'] = false;
+
+                currentChars.pop_back();
+            }
+
+            currentChars.push_back(c);
+        }
+
+        auto returnValue = std::string();
+        returnValue.reserve(currentChars.size());
+        for (const auto& c: currentChars) {
+            returnValue.push_back(c);
+        }
+        return returnValue;
+    }
+};
+
+
 void test(const std::string& s, const std::string& expectedResult) {
     static auto solutionInstance = Solution();
 
@@ -140,9 +193,9 @@ void test(const std::string& s, const std::string& expectedResult) {
     auto result = solutionInstance.removeDuplicateLetters(sCopy);
 
     if (result == expectedResult) {
-        std::cout << "[Correct] " << s << ": " << result << std::endl;
+        std::cout << terminal_format::OK_GREEN << "[Correct] " << terminal_format::ENDC << s << ": " << result << std::endl;
     } else {
-        std::cout << "[Wrong] " << s << ": " << result << " (should be " << expectedResult << ")" << std::endl;
+        std::cout << terminal_format::FAIL << terminal_format::BOLD << "[Wrong] " << terminal_format::ENDC << s << ": " << result << " (should be " << expectedResult << ")" << std::endl;
     }
 }
 
