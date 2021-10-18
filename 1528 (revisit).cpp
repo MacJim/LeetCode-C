@@ -66,7 +66,7 @@ public:
 #pragma mark - 3. Modify the string and the `indices` array in-place
 // Runtime: 8 ms, faster than 73.71% of C++ online submissions for Shuffle String.
 // Memory Usage: 15.1 MB, less than 76.20% of C++ online submissions for Shuffle String.
-class Solution {
+class Solution3 {
 public:
     std::string restoreString(std::string& s, std::vector<int>& indices) {
         for (int i = 0; i < s.size(); i += 1) {
@@ -89,6 +89,25 @@ public:
                 indices[currentIndex] = -1;
                 currentIndex = nextIndex;
                 nextIndex = indices[currentIndex];
+            }
+        }
+
+        return std::move(s);
+    }
+};
+
+
+#pragma mark - 4. Swap characters and next indices (revisit)
+// Source: https://leetcode.com/problems/shuffle-string/discuss/755923/Used-Cyclic-Sort-with-O(1)-SPACE-and-O(N)-Time-complexity
+// Runtime: 6 ms, faster than 77.56% of C++ online submissions for Shuffle String.
+// Memory Usage: 15 MB, less than 94.17% of C++ online submissions for Shuffle String.
+class Solution {
+public:
+    std::string restoreString(std::string& s, std::vector<int>& indices) {
+        for (int i = 0; i < s.size(); i += 1) {
+            while (indices[i] != i) {
+                std::swap(s[i], s[indices[i]]);
+                std::swap(indices[i], indices[indices[i]]);    // Assign the next's next to current.
             }
         }
 
