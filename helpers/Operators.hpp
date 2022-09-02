@@ -8,6 +8,7 @@
 
 #include <iostream>
 #include <vector>
+#include <array>
 #include <set>
 #include <queue>
 
@@ -52,6 +53,18 @@ template <typename T>
 std::ostream& operator << (std::ostream& os, const std::vector<T>& v) {
     os << "[";
     for (const auto& element: v) {
+        os << " " << element;
+    }
+    os << " ]";
+    return os;
+}
+
+
+#pragma mark array
+template <typename T, std::size_t N>
+std::ostream& operator << (std::ostream& os, const std::array<T, N>& a) {
+    os << "[";
+    for (const auto& element: a) {
         os << " " << element;
     }
     os << " ]";
